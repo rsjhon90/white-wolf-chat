@@ -2,8 +2,8 @@
 
 ## Tecnologias
 
-[ReactJS](https://pt-br.reactjs.org/)
-[NextJS Framework](https://nextjs.org/)
+- [ReactJS](https://pt-br.reactjs.org/)
+- [NextJS Framework](https://nextjs.org/)
 
 ## Projeto
 

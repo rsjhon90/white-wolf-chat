@@ -5,36 +5,10 @@ import {
   TextField, 
   Image, 
 } from '@skynexui/components';
-import appConfig from '../config.json';
+import React from 'react';
+import { useRouter } from 'next/router';
 
-function GlobalStyle() {
-  return (
-    <style global jsx>{`
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      list-style: none;
-      }
-      body {
-        font-family: 'Open Sans', sans-serif;
-      }
-      /* App fit Height */ 
-      html, body, #__next {
-        min-height: 100vh;
-        display: flex;
-        flex: 1;
-      }
-      #__next {
-        flex: 1;
-      }
-      #__next > * {
-        flex: 1;
-      }
-      /* ./App fit Height */ 
-    `}</style>
-  )
-}
+import appConfig from '../config.json';
 
 function Title(props) {
   const { tag, children } = props;
@@ -56,11 +30,29 @@ function Title(props) {
 };
 
 function HomePage() {
-  const username = 'peas';
+  const [username, setUsername] = React.useState();
+  const [urlImage, setUrlImage] = React.useState();
+  const [buttonBlock, setButtonBlock] = React.useState(true);
+
+  const router = useRouter();
+
+  React.useEffect(() => {
+    const witcherPersona = {
+      1: 'Dandelion',
+      2: 'Yennefer',
+      3: 'Triss',
+      4: 'Geralt'
+    };
+  
+    const random = Math.floor(Math.random() * (4 - 1 + 1) + 1);
+    const witcherUser = witcherPersona[random];
+
+    setUsername(witcherUser);
+    setUrlImage(`https://white-wolf-chat.s3.sa-east-1.amazonaws.com/${witcherUser}.png`)
+  }, [])
 
   return (
     <>
-      <GlobalStyle />
       <Box
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -97,6 +89,12 @@ function HomePage() {
           {/* Formulário */}
           <Box
             as="form"
+            onSubmit={
+              function handler(event) {
+                event.preventDefault();
+                router.push('/chat');
+              }
+            }
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
@@ -108,6 +106,20 @@ function HomePage() {
             </Text>
 
             <TextField
+              value={username || ''}
+              onChange={
+                function handler(event) {
+                  setButtonBlock(false);
+                  const value = event.target.value;
+
+                  setUsername(value);
+                  setUrlImage(`https://github.com/${value}.png`);
+
+                  if (value.length <= 2) {
+                    setButtonBlock(true)
+                  }
+                }
+              }
               fullWidth
               textFieldColors={{
                 neutral: {
@@ -122,6 +134,7 @@ function HomePage() {
               type='submit'
               label='Entrar'
               fullWidth
+              disabled={buttonBlock}
               buttonColors={{
                 contrastColor: appConfig.theme.colors.neutrals["000"],
                 mainColor: appConfig.theme.colors.primary[500],
@@ -154,7 +167,7 @@ function HomePage() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
-              src={`https://github.com/${username}.png`}
+              src={urlImage}
             />
             <Text
               variant="body4"
