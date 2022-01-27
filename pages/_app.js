@@ -27,15 +27,32 @@ function GlobalStyle() {
   )
 }
 
-
-function MyApp({ Component, pageProps }) {
-  console.log('Rodando em todas as páginas');
+function Video() {
   return (
     <>
-    <GlobalStyle />
-    <Component {...pageProps} />
+      <video autoPlay loop muted>
+        <source src={'https://cdn.akamai.steamstatic.com/steamcommunity/public/images/items/292030/1fd28b25668126b0a14d3955906945b941571e44.webm'}/>
+      </video>
+
+      <style jsx>{`
+        video {
+          object-fit: cover;
+          width: 100%;
+          height: 100%;
+          position: fixed;
+          z-index: -1;
+        }
+      `}</style>
     </>
   )
 };
 
-export default MyApp
+export default function MyApp({ Component, pageProps }) {
+  return (
+    <>
+    <GlobalStyle />
+    <Video />
+    <Component {...pageProps} />
+    </>
+  )
+};

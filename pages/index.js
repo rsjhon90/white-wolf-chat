@@ -11,7 +11,7 @@ import { useRouter } from 'next/router';
 import appConfig from '../config.json';
 
 function Title(props) {
-  const { tag, children } = props;
+  const { tag, children} = props;
   const Tag = tag || 'h1';
 
   return (
@@ -49,28 +49,16 @@ function HomePage() {
 
     setUsername(witcherUser);
     setUrlImage(`https://white-wolf-chat.s3.sa-east-1.amazonaws.com/${witcherUser}.png`)
-  }, [])
+    // setUrlImage(`https://github.com/peas.png`)
+  }, []);
 
   return (
     <>
       <Box
         styleSheet={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
-        <video className='homePageVideo' autoPlay loop muted>
-          <source src={'https://cdn.akamai.steamstatic.com/steamcommunity/public/images/items/292030/1fd28b25668126b0a14d3955906945b941571e44.webm'}/>
-        </video>
-
-        <style jsx>{`
-          .homePageVideo {
-            object-fit: cover;
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            z-index: -1;
-          }
-        `}</style>
         <Box
           styleSheet={{
             display: 'flex',
@@ -101,8 +89,13 @@ function HomePage() {
             }}
           >
             <Title tag="h1">Boas vindas!</Title>
+
+            <Text variant="body1" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals['050'] }}>
+              Adentre, você, com garras, das orelhas pontudas, da magia ou não.
+            </Text>
+
             <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[300] }}>
-              {appConfig.name}
+              {`${appConfig.name} (${username})`}
             </Text>
 
             <TextField
@@ -116,7 +109,8 @@ function HomePage() {
                   setUrlImage(`https://github.com/${value}.png`);
 
                   if (value.length <= 2) {
-                    setButtonBlock(true)
+                    setUrlImage('');
+                    setButtonBlock(true);
                   }
                 }
               }
@@ -179,6 +173,7 @@ function HomePage() {
               }}
             >
               {username}
+              {/* <p>{location}</p> */}
             </Text>
           </Box>
           {/* Photo Area */}

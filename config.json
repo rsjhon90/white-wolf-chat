@@ -1,5 +1,6 @@
 {
-  "name": "White Wolf Chat (peas)",
+  "name": "White Wolf Chat",
+  "githubApi": "https://api.github.com/users",
   "theme": {
     "colors": {
       "primary": {
