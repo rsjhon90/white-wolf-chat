@@ -49,7 +49,6 @@ function HomePage() {
 
     setUsername(witcherUser);
     setUrlImage(`https://white-wolf-chat.s3.sa-east-1.amazonaws.com/${witcherUser}.png`)
-    // setUrlImage(`https://github.com/peas.png`)
   }, []);
 
   return (
@@ -80,7 +79,10 @@ function HomePage() {
             onSubmit={
               function handler(event) {
                 event.preventDefault();
-                router.push('/chat');
+                router.push({
+                  pathname: '/chat',
+                  query: { username }               
+                })
               }
             }
             styleSheet={{

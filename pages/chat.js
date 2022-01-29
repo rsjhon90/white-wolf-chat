@@ -1,26 +1,48 @@
-import { Box, Text, TextField, Image, Button } from '@skynexui/components';
+import { Box, TextField, Button } from '@skynexui/components';
 import React from 'react';
+import { useRouter } from 'next/router';
 
 import appConfig from '../config.json';
+import { MessageList } from '../src/components/MessageList';
+import { Header } from '../src/components/ChatHeader';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
+import { MessageRepository, MessageModel } from '../src/utils/supabaseClient';
 
 export default function ChatPage() {
+  const router = useRouter();
+  const { username } = router.query;
+  const messageRepository = new MessageRepository();
 
-  const [message, setMessage] = React.useState('');
+  const [typing, setTyping] = React.useState('');
   const [messageList, setMessageList] = React.useState([]);
+  const [change, setChange] = React.useState({});
 
-  function newMessageHandle(newMessage) {
-    const message = {
-      id: messageList.length + 1,
-      from: 'vanessametonini',
-      body: newMessage
-    };
+  React.useEffect(async () => {
+    const messages = await messageRepository.findAll();
 
-    setMessageList([
-      message,
-      ...messageList,
-    ]);
-    setMessage('');
-  }
+    setMessageList(messages);
+  }, [, change]);
+
+  React.useEffect(() => {
+    messageRepository.listener(setChange);
+  }, [messageList]);
+
+  async function newMessageHandle(newMessage) {
+    if (newMessage.length > 0) {
+      const message = new MessageModel({
+        from: username,
+        body: newMessage
+      });
+
+      await messageRepository.save(message);
+
+      setMessageList([
+        message,
+        ...messageList,
+      ]);
+      setTyping('');
+    }
+  };
 
   return (
     <Box
@@ -56,7 +78,10 @@ export default function ChatPage() {
             padding: '16px',
           }}
         >
-          <MessageList messages={messageList} />
+          <MessageList 
+            messages={messageList}
+            deleteMessage={messageRepository.delete}
+          />
 
           <Box
             as="form"
@@ -66,19 +91,18 @@ export default function ChatPage() {
             }}
           >
             <TextField
-              value={message}
+              value={typing}
               onChange={
                 function handler(event) {
                   const { value } = event.target;
 
-                  setMessage(value);
+                  setTyping(value);
                 }
               }
               onKeyPress={(event) => {
                 if (event.key === 'Enter') {
-                  {console.log(User.read())}
                   event.preventDefault();
-                  newMessageHandle(message);
+                  newMessageHandle(typing);
                 }
               }}
               placeholder="Insira sua mensagem aqui..."
@@ -94,100 +118,26 @@ export default function ChatPage() {
                 color: appConfig.theme.colors.neutrals[200],
               }}
             />
+            <Button
+              iconName="FaAngleDoubleRight"
+              fullWidth
+              variant="primary"
+              onClick={
+                () => {
+                  newMessageHandle(message);
+                }
+              }
+              buttonColors={{
+                contrastColor: appConfig.theme.colors.neutrals["000"],
+                mainColor: appConfig.theme.colors.primary[500],
+                mainColorLight: appConfig.theme.colors.primary[400],
+                mainColorStrong: appConfig.theme.colors.primary[600],
+              }}
+            />
+            <ButtonSendSticker onStickerClick={newMessageHandle}/>
           </Box>
         </Box>
       </Box>
-    </Box>
-  )
-}
-
-function Header() {
-
-  return (
-    <>
-      <Box styleSheet={{
-        width: '100%',
-        marginBottom: '16px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      }} >
-        <Text variant='heading5'>
-          Chat
-        </Text>
-        <Button
-          variant='tertiary'
-          colorVariant='neutral'
-          label='Logout'
-          href="/"
-        />
-      </Box>
-    </>
-  )
-}
-
-function MessageList(props) {
-  const { messages } = props;
-
-  return (
-    <Box
-      tag="ul"
-      styleSheet={{
-        overflow: 'scroll',
-        display: 'flex',
-        flexDirection: 'column-reverse',
-        flex: 1,
-        color: appConfig.theme.colors.neutrals["000"],
-        marginBottom: '16px',
-      }}
-    >
-      {messages.map((message) => {
-        return (
-          <Text
-            key={message.id}
-            tag="li"
-            styleSheet={{
-              borderRadius: '10px',
-              padding: '6px',
-              marginBottom: '12px',
-              hover: {
-                backgroundColor: appConfig.theme.colors.neutrals[700],
-              }
-            }}
-          >
-            <Box
-              styleSheet={{
-                marginBottom: '8px',
-              }}
-            >
-              <Image
-                styleSheet={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  display: 'inline-block',
-                  marginRight: '8px',
-                }}
-                src={`https://github.com/vanessametonini.png`}
-              />
-              <Text tag="strong">
-                {message.from}
-              </Text>
-              <Text
-                styleSheet={{
-                  fontSize: '10px',
-                  marginLeft: '8px',
-                  color: appConfig.theme.colors.neutrals[300],
-                }}
-                tag="span"
-              >
-                {(new Date().toLocaleDateString())}
-              </Text>
-            </Box>
-            {message.body}
-          </Text>
-        )
-      })}
     </Box>
   )
 };
