@@ -3,7 +3,9 @@ import { Box, Text, Image, Button } from '@skynexui/components';
 import appConfig from '../../config.json';
 
 export function MessageList(props) {
-  const { messages, deleteMessage } = props;
+  const { messages, deleteMessage, user } = props;
+
+  // const isOwner = messages.some((message) => message.from === user);
 
   return (
     <Box
@@ -18,6 +20,8 @@ export function MessageList(props) {
       }}
     >
       {(messages.map((message) => {
+        const isOwner = message.from === user;
+
         return (
           <Text
             key={message.id}
@@ -34,17 +38,19 @@ export function MessageList(props) {
               display: 'flex',
             }}
           >
-            <Button
-              onClick={
-                () => deleteMessage(message.id)
-              }
-              styleSheet={{
-                marginLeft: '400px',
-              }}
-              colorVariant="accent"
-              iconName="FaWindowClose"
-              variant="tertiary"
-            />
+            {isOwner && (
+              <Button
+                onClick={
+                  () => deleteMessage(message.id)
+                }
+                styleSheet={{
+                  marginLeft: '400px',
+                }}
+                colorVariant="accent"
+                iconName="FaWindowClose"
+                variant="tertiary"
+              />
+            )}
             <Box
               styleSheet={{
                 marginBottom: '8px',
@@ -76,17 +82,17 @@ export function MessageList(props) {
 
             </Box>
             {message.body.startsWith(':sticker:')
-            ? (
-              <Image
-               src={message.body.replace(':sticker:', '')}
-               styleSheet={{
-                 maxWidth: '150px'
-               }}
-              />
-            )
-            : (
-              message.body
-            )
+              ? (
+                <Image
+                  src={message.body.replace(':sticker:', '')}
+                  styleSheet={{
+                    maxWidth: '150px'
+                  }}
+                />
+              )
+              : (
+                message.body
+              )
             }
           </Text>
         )

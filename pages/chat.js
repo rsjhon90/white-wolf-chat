@@ -81,6 +81,7 @@ export default function ChatPage() {
           <MessageList 
             messages={messageList}
             deleteMessage={messageRepository.delete}
+            user={username}
           />
 
           <Box
